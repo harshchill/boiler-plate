@@ -8,6 +8,7 @@ import {
   Package, Truck, PieChart, Settings, Percent, Info,
   Heart, ShoppingCart, FileText, LogOut  // Added icons for wishlist, cart, terms, logout
 } from 'lucide-react';
+import Navbar from './components/navbar/Navbar';
 
 export default function RentalHackathonPortal() {
   const { data: session } = useSession();
@@ -74,7 +75,7 @@ export default function RentalHackathonPortal() {
   };
 
   return (
-    <div className="min-h-screen font-sans bg-[#EAEFEF]" style={{ color: '#25343F' }}>
+    <div className="min-h-screen font-sans bg-[#eff1f1]" style={{ color: '#25343F' }}>
       
       {/* 1. WINNING NAV: ROLE SWITCHER & COMPLIANCE */}
       <nav className="sticky top-0 z-50 p-4 bg-[#25343F] text-white shadow-2xl">
