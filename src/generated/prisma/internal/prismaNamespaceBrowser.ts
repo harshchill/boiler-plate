@@ -51,10 +51,9 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Category: 'Category',
   User: 'User',
   Product: 'Product',
-  Cart: 'Cart',
-  CartItem: 'CartItem',
   Order: 'Order',
   OrderItem: 'OrderItem',
   Invoice: 'Invoice'
@@ -76,6 +75,14 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -94,35 +101,14 @@ export const ProductScalarFieldEnum = {
   name: 'name',
   description: 'description',
   isRentable: 'isRentable',
+  image: 'image',
   priceHourly: 'priceHourly',
-  priceDaily: 'priceDaily',
-  priceWeekly: 'priceWeekly',
   totalStock: 'totalStock',
+  categoryId: 'categoryId',
   vendorId: 'vendorId'
 } as const
 
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
-
-
-export const CartScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CartScalarFieldEnum = (typeof CartScalarFieldEnum)[keyof typeof CartScalarFieldEnum]
-
-
-export const CartItemScalarFieldEnum = {
-  id: 'id',
-  cartId: 'cartId',
-  productId: 'productId',
-  quantity: 'quantity',
-  startDate: 'startDate',
-  endDate: 'endDate'
-} as const
-
-export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
 
 
 export const OrderScalarFieldEnum = {
@@ -142,6 +128,7 @@ export const OrderItemScalarFieldEnum = {
   orderId: 'orderId',
   productId: 'productId',
   quantity: 'quantity',
+  price: 'price',
   startDate: 'startDate',
   endDate: 'endDate'
 } as const
