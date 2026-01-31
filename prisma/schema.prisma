@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client"
@@ -13,9 +8,137 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  CUSTOMER
+  VENDOR
+  ADMIN
+}
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  password    String
+  name        String
+  role        Role     @default(CUSTOMER)
+  
+  // Profile Details [cite: 32, 33]
+  companyName String?
+  gstin       String?  // Mandatory for invoicing logic
+
+  // Relations
+  products    Product[] // Only for Vendors
+  orders      Order[]
+  cart        Cart?     // One active cart per user
+  invoices    Invoice[]
+}
+
+// --- 2. PRODUCTS (INVENTORY) ---
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  isRentable  Boolean  @default(true) 
+  
+  // Pricing Strategy 
+  priceHourly Decimal? @default(0)
+  priceDaily  Decimal  @default(0) 
+  priceWeekly Decimal? @default(0)
+
+  // Inventory Management
+  totalStock  Int      @default(1) 
+  
+  // Who owns this product? (Vendor)
+  vendorId    Int
+  vendor      User     @relation(fields: [vendorId], references: [id])
+
+  // Relations
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+}
+
+// --- 3. CART (QUOTATION PHASE) ---
+// This is your "Draft" state. Stock is NOT reserved here. 
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  quantity  Int      @default(1)
+  
+  // Crucial: User must select dates even in Cart to see price [cite: 65]
+  startDate DateTime
+  endDate   DateTime
+}
+
+// --- 4. ORDERS (RESERVATION PHASE) ---
+// Once confirmed, CartItems are moved here. This BLOCKS inventory. [cite: 63, 64]
+enum OrderStatus {
+  PENDING     // Payment pending
+  CONFIRMED   // Paid & Reserved
+  PICKED_UP   // Product with customer [cite: 68]
+  RETURNED    // Product returned [cite: 71]
+  CANCELLED
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  items       OrderItem[]
+  invoice     Invoice?
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  quantity  Int
+  
+  // Dates are locked here for reservation logic [cite: 65]
+  startDate DateTime
+  endDate   DateTime
+}
+
+// --- 5. INVOICING ---
+// Generated after Order Confirmation [cite: 80]
+enum PaymentStatus {
+  UNPAID
+  PAID
+  PARTIAL
+}
+
+model Invoice {
+  id          Int           @id @default(autoincrement())
+  orderId     Int           @unique
+  order       Order         @relation(fields: [orderId], references: [id])
+  
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+
+  amountTotal Decimal
+  amountPaid  Decimal       @default(0)
+  status      PaymentStatus @default(UNPAID)
+  
+  pdfUrl      String?       // For storing the generated PDF link
+  issuedAt    DateTime      @default(now())
 }
