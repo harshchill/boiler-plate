@@ -119,7 +119,6 @@ export async function removeCartItem(itemId) {
 export async function updateCartItemQuantity(itemId, quantity) {
   try {
     const session = await getServerSessionHelper()
-    
     if (!session || !session.user) {
       return { error: 'Unauthorized' }
     }
@@ -148,9 +147,34 @@ export async function updateCartItemQuantity(itemId, quantity) {
       return { error: 'Quantity must be greater than 0' }
     }
 
-    // Recalculate price
+    // Validate date range (no past bookings)
     const start = new Date(item.startDate)
     const end = new Date(item.endDate)
+    const now = new Date()
+    if (!(start instanceof Date) || isNaN(start) || !(end instanceof Date) || isNaN(end) || end <= start || start < now) {
+      return { error: 'Invalid date range' }
+    }
+
+    // Validate availability against overlapping reservations for active orders
+    const reservingStatuses = ['SALE_ORDER', 'SALE_ORDER_CONFIRMED', 'INVOICED']
+    const overlappingReserved = await prisma.orderItem.aggregate({
+      _sum: { quantity: true },
+      where: {
+        productId: item.productId,
+        order: { status: { in: reservingStatuses } },
+        NOT: [
+          { endDate: { lte: start } },
+          { startDate: { gte: end } },
+        ],
+      },
+    })
+    const reservedQty = overlappingReserved._sum.quantity || 0
+    const available = Number(item.product.totalStock) - Number(reservedQty)
+    if (parseInt(quantity) > available) {
+      return { error: 'Insufficient stock for the selected dates' }
+    }
+
+    // Recalculate price
     const hours = Math.ceil((end - start) / (1000 * 60 * 60))
     const newPrice = hours * Number(item.product.priceHourly || 0) * quantity
 

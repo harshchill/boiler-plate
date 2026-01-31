@@ -18,6 +18,7 @@ import {
   Building2,
   Shield
 } from 'lucide-react'
+import { toast } from '../../../lib/toast'
 
 export default function AdminUsersPage() {
   const { data: session, status } = useSession()
@@ -93,7 +94,7 @@ export default function AdminUsersPage() {
       await fetchUsers()
       setEditingUser(null)
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message)
     } finally {
       setActionLoading(false)
     }
@@ -114,7 +115,7 @@ export default function AdminUsersPage() {
       await fetchUsers()
       setDeleteConfirm(null)
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message)
     } finally {
       setActionLoading(false)
     }

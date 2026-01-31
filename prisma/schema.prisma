@@ -13,9 +13,7 @@ enum Role {
   ADMIN
 }
 
-
-
-model  Category {
+model Category {
   id   Int    @id @default(autoincrement())
   name String @unique
 
@@ -23,11 +21,12 @@ model  Category {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
   password String
   name     String
-  role     Role   @default(CUSTOMER)
+  address  String?
+  role     Role    @default(CUSTOMER)
 
   // details needs for vendor registration
   companyName String?
@@ -41,12 +40,12 @@ model User {
 
 // --- 2. PRODUCTS (INVENTORY) ---
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   name        String
   // category    Category
   description String?
-  isRentable  Boolean  @default(true)
-  image       String?  // Product image URL
+  isRentable  Boolean @default(true)
+  image       String? // Product image URL
 
   // Pricing Strategy 
   priceHourly Decimal? @default(0)
@@ -55,8 +54,7 @@ model Product {
   totalStock Int @default(1)
 
   categoryId Int?
-  category  Category? @relation(fields: [categoryId], references: [id])
-
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   // Who owns this product? (Vendor)
   vendorId Int
@@ -69,11 +67,26 @@ model Product {
 // --- 3. ORDERS (SIMPLIFIED MVP) ---
 // All states handled through Order status: QUOTATION -> SALE_ORDER -> SALE_ORDER_CONFIRMED -> INVOICED
 enum OrderStatus {
-  QUOTATION              // Initial quote/draft (like cart)
-  SALE_ORDER            // Customer submitted order
-  SALE_ORDER_CONFIRMED  // Vendor confirmed order
-  INVOICED              // Invoice generated
-  CANCELLED             // Order cancelled
+  QUOTATION // Initial quote/draft (like cart)
+  SALE_ORDER // Customer submitted order
+  SALE_ORDER_CONFIRMED // Vendor confirmed order
+  INVOICED // Invoice generated
+  CANCELLED // Order cancelled
+}
+
+// Delivery method for order fulfillment
+enum DeliveryMethod {
+  COD
+  PICKUP
+}
+
+// Current delivery status for fulfillment tracking
+enum DeliveryStatus {
+  PENDING
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  IN_TRANSIT
+  DELIVERED
 }
 
 model Order {
@@ -82,7 +95,10 @@ model Order {
   user   User @relation(fields: [userId], references: [id])
 
   status      OrderStatus @default(QUOTATION)
+  deliveryStatus DeliveryStatus @default(PENDING)
   totalAmount Decimal?
+  deliveryMethod DeliveryMethod?
+  shippingAddress String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

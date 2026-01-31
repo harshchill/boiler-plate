@@ -10,6 +10,7 @@ import {
   Activity, FileText, User, Package, Settings, LogOut  // Added missing icons
 } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from '../../lib/toast'
 
 export default function ProductContent() {
   const searchParams = useSearchParams();
@@ -88,12 +89,12 @@ export default function ProductContent() {
   // Add to cart handler
   const handleAddToCart = async () => {
     if (!product || !rentalDates.start || !rentalDates.end) {
-      alert('Please select rental dates');
+      toast.error('Please select rental dates')
       return;
     }
 
     if (new Date(rentalDates.start) >= new Date(rentalDates.end)) {
-      alert('End date must be after start date');
+      toast.error('End date must be after start date')
       return;
     }
 
@@ -115,14 +116,14 @@ export default function ProductContent() {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Product added to cart successfully!');
+        toast.success('Product added to cart successfully!')
         // Optionally redirect to cart or reset form
       } else {
-        alert(data.error || 'Failed to add product to cart');
+        toast.error(data.error || 'Failed to add product to cart')
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add product to cart');
+      toast.error('Failed to add product to cart')
     } finally {
       setAddingToCart(false);
     }
@@ -205,7 +206,7 @@ export default function ProductContent() {
                   <Link href="/cart" className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors">
                     <ShoppingCart size={14}/> My Cart
                   </Link>
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors"><Package size={14}/> My Orders</button>
+                  <Link href="/user/order" className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors"><Package size={14}/> My Orders</Link>
                   <button className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors"><Settings size={14}/> Settings</button>
                   <button 
                     onClick={() => signOut({ callbackUrl: '/' })}

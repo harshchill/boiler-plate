@@ -7,6 +7,7 @@ import {
   Activity, ArrowLeft, ShoppingCart, Trash2, Plus, Minus,
   Calendar, Package, User, Settings, LogOut, Heart, FileText
 } from 'lucide-react';
+import { toast } from '../../lib/toast';
 import { getCart, removeCartItem, updateCartItemQuantity } from './actions';
 
 export default function CartPage() {
@@ -26,7 +27,7 @@ export default function CartPage() {
       setLoading(true);
       const result = await getCart();
       if (result.error) {
-        console.error(result.error);
+        toast.error(result.error)
       } else {
         setCart(result.cart);
       }
@@ -42,13 +43,13 @@ export default function CartPage() {
     try {
       const result = await removeCartItem(itemId);
       if (result.error) {
-        alert(result.error);
+        toast.error(result.error)
       } else {
         await fetchCart();
       }
-    } catch (error) {
+      } catch (error) {
       console.error('Error removing item:', error);
-      alert('Failed to remove item');
+      toast.error('Failed to remove item')
     } finally {
       setUpdatingItems(prev => {
         const newSet = new Set(prev);
@@ -65,13 +66,13 @@ export default function CartPage() {
     try {
       const result = await updateCartItemQuantity(itemId, newQuantity);
       if (result.error) {
-        alert(result.error);
+        toast.error(result.error)
       } else {
         await fetchCart();
       }
     } catch (error) {
       console.error('Error updating quantity:', error);
-      alert('Failed to update quantity');
+      toast.error('Failed to update quantity')
     } finally {
       setUpdatingItems(prev => {
         const newSet = new Set(prev);
@@ -305,7 +306,10 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <button className="w-full bg-[#FF9B51] text-white rounded-2xl font-black uppercase tracking-widest text-xs py-4 hover:brightness-110 transition">
+                <button
+                  onClick={() => router.push('/checkout')}
+                  className="w-full bg-[#FF9B51] text-white rounded-2xl font-black uppercase tracking-widest text-xs py-4 hover:brightness-110 transition"
+                >
                   Proceed to Checkout
                 </button>
 

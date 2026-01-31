@@ -29,6 +29,25 @@ export const OrderStatus = {
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 
 
+export const DeliveryMethod = {
+  COD: 'COD',
+  PICKUP: 'PICKUP'
+} as const
+
+export type DeliveryMethod = (typeof DeliveryMethod)[keyof typeof DeliveryMethod]
+
+
+export const DeliveryStatus = {
+  PENDING: 'PENDING',
+  READY_FOR_PICKUP: 'READY_FOR_PICKUP',
+  OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+  IN_TRANSIT: 'IN_TRANSIT',
+  DELIVERED: 'DELIVERED'
+} as const
+
+export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus]
+
+
 export const PaymentStatus = {
   UNPAID: 'UNPAID',
   PAID: 'PAID',

@@ -116,7 +116,7 @@ export default function RentalHackathonPortal() {
                   <Link href="/cart" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
                     <ShoppingCart size={16} /> My Cart
                   </Link>
-                  <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
+                  <a href="/user/order" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
                     <Package size={16} /> My Orders
                   </a>
                   <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">

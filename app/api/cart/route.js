@@ -118,6 +118,23 @@ export async function POST(request) {
       )
     }
 
+    // Validate dates
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    const now = new Date()
+    if (!(start instanceof Date) || isNaN(start) || !(end instanceof Date) || isNaN(end) || end <= start) {
+      return NextResponse.json(
+        { error: 'Invalid date range' },
+        { status: 400 }
+      )
+    }
+    if (start < now) {
+      return NextResponse.json(
+        { error: 'Cannot book in the past' },
+        { status: 400 }
+      )
+    }
+
     // Validate product exists and is rentable
     const product = await prisma.product.findUnique({
       where: { id: parseInt(productId) },
@@ -130,9 +147,9 @@ export async function POST(request) {
       )
     }
 
-    if (!product.isRentable || product.totalStock < quantity) {
+    if (!product.isRentable) {
       return NextResponse.json(
-        { error: 'Product is not available for rental or insufficient stock' },
+        { error: 'Product is not available for rental' },
         { status: 400 }
       )
     }
@@ -168,15 +185,56 @@ export async function POST(request) {
     })
 
     // Calculate price
-    const start = new Date(startDate)
-    const end = new Date(endDate)
     const hours = Math.ceil((end - start) / (1000 * 60 * 60))
     const itemPrice = hours * Number(product.priceHourly || 0) * parseInt(quantity)
+
+    // Check availability against overlapping reservations
+    const reservingStatuses = ['SALE_ORDER', 'SALE_ORDER_CONFIRMED', 'INVOICED']
+    const overlappingReserved = await prisma.orderItem.aggregate({
+      _sum: { quantity: true },
+      where: {
+        productId: parseInt(productId),
+        order: { status: { in: reservingStatuses } },
+        NOT: [
+          { endDate: { lte: start } },
+          { startDate: { gte: end } },
+        ],
+      },
+    })
+    const reservedQty = overlappingReserved._sum.quantity || 0
+    const available = Number(product.totalStock) - Number(reservedQty)
+    if (parseInt(quantity) > available) {
+      return NextResponse.json(
+        { error: 'Insufficient stock for the selected dates' },
+        { status: 400 }
+      )
+    }
 
     if (existingItem) {
       // Update quantity and price if item exists
       const newQuantity = existingItem.quantity + parseInt(quantity)
       const newPrice = hours * Number(product.priceHourly || 0) * newQuantity
+      // Re-check availability for updated quantity (exclude the existing item's current quantity from reserved)
+      const overlappingReservedExcludingSelf = await prisma.orderItem.aggregate({
+        _sum: { quantity: true },
+        where: {
+          productId: parseInt(productId),
+          order: { status: { in: reservingStatuses } },
+          NOT: [
+            { endDate: { lte: start } },
+            { startDate: { gte: end } },
+          ],
+          id: { not: existingItem.id },
+        },
+      })
+      const reservedExcl = overlappingReservedExcludingSelf._sum.quantity || 0
+      const availableForUpdate = Number(product.totalStock) - Number(reservedExcl)
+      if (newQuantity > availableForUpdate) {
+        return NextResponse.json(
+          { error: 'Insufficient stock for the selected dates' },
+          { status: 400 }
+        )
+      }
       
       const updatedItem = await prisma.orderItem.update({
         where: { id: existingItem.id },
