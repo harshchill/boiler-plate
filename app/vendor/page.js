@@ -98,15 +98,15 @@ const VendorDashboard = () => {
             <Link href="/" className="text-2xl font-black uppercase tracking-tighter flex items-center gap-2">
               <Activity size={28} style={{ color: '#FF9B51' }} /> PRO<span className="opacity-60">RENT</span>
             </Link>
-            <div className="hidden lg:flex space-x-6 text-[10px] font-black uppercase tracking-widest opacity-70">
-              <button onClick={() => setViewMode('kanban')} className="hover:text-[#FF9B51] flex items-center gap-1">
-                <LayoutGrid size={14} /> Orders
+            <div className="hidden lg:flex ml-70 space-x-6 text-[10px] font-black uppercase tracking-widest opacity-70">
+              <button className="hover:text-[#FF9B51] flex items-center gap-1">
+                 <Link href="/vendor/orders">Orders</Link>
               </button>
-              <button onClick={() => setViewMode('list')} className="hover:text-[#FF9B51] transition">
-                <List size={14} /> Customers
+              <button  className="hover:text-[#FF9B51] transition">
+                <Link href="/vendor/customersdetails">Customers</Link>
               </button>
               <Link href="/vendor/products" className="hover:text-[#FF9B51] flex items-center gap-1">
-                <Package size={14} /> Products
+                Products
               </Link>
             </div>
           </div>

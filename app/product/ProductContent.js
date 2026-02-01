@@ -156,72 +156,84 @@ export default function ProductContent() {
 
   return (
     <div className="min-h-screen bg-[#EAEFEF] font-sans pb-20" style={{ color: '#25343F' }}>
-         <nav className="p-6 sticky top-0 z-50 bg-white border-b border-[#BFC9D1] shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <h1 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-2">
-              <Activity size={28} style={{ color: '#FF9B51' }} /> PRO<span className="opacity-60">RENT</span>
-            </h1>
-            <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:text-[#FF9B51] transition">
-          <Link href="/" className="flex items-center gap-2">
-          <ArrowLeft size={16} /> Back to Catalog
-          </Link>
-        </button>
-            <div className="hidden lg:flex space-x-6 text-[10px] font-black uppercase tracking-widest opacity-70">
-              <a href="#" className="hover:text-[#FF9B51] flex items-center gap-1"><FileText size={14}/>Terms & Conditions</a>
-              <a href="#" className="hover:text-[#FF9B51] transition">Product</a>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-4 border-r border-[#BFC9D1] pr-6">
-              <button className="relative hover:text-[#FF9B51] transition">
-                <Heart size={20} />
-                <span className="absolute -top-2 -right-2 bg-[#FF9B51] text-white text-[8px] px-1.5 rounded-full">0</span>
-              </button>
-              <Link href="/cart" className="relative hover:text-[#FF9B51] transition">
-                <ShoppingCart size={20} />
-                <span className="absolute -top-2 -right-2 bg-[#25343F] text-white text-[8px] px-1.5 rounded-full">1</span>
-              </Link>
-            </div>
-
-            {/* Oval Account Profile */}
-            <div className="relative">
-              <button 
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-3 px-4 py-2 rounded-full border-2 border-[#25343F] hover:bg-[#25343F] hover:text-white transition-all group"
-              >
-                <User size={18} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Account</span>
-              </button>
-
-              {isProfileOpen && (
-                <div className="absolute right-0 mt-3 w-48 bg-white border border-[#BFC9D1] rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                  <div className="p-4 border-b border-[#EAEFEF] bg-[#EAEFEF]/50">
-                    <p className="text-[10px] font-black opacity-40 uppercase">Signed in as</p>
-                    <p className="text-xs font-bold truncate text-[#FF9B51]">
-                      {session?.user?.name || 'Guest'} {session?.user?.role && `(${session.user.role})`}
-                    </p>
+        <nav className="sticky top-0 z-50 p-4 bg-[#25343F] text-white shadow-2xl">
+                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Activity className="text-[#FF9B51]" />
+                    <h1 className="font-black tracking-tighter text-xl italic">PRO<span className="text-[#FF9B51]">RENT</span></h1>
                   </div>
-                  <Link href="/cart" className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors">
-                    <ShoppingCart size={14}/> My Cart
-                  </Link>
-                  <Link href="/user/order" className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors"><Package size={14}/> My Orders</Link>
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors"><Settings size={14}/> Settings</button>
-                  <button 
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-red-50 text-red-500 transition-colors border-t border-[#EAEFEF]"
-                  >
-                    <LogOut size={14}/> Logout
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <button className="text-white hover:text-[#FF9B51] transition text-sm font-medium">
+                      <FileText size={18} className="inline mr-1" /> Terms & Conditions
+                    </button>
+                    <button className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition">
+                      <Heart size={18} />
+                    </button>
+                    <Link href="/cart" className="relative p-2 bg-white/10 rounded-full hover:bg-white/20 transition">
+                      <ShoppingCart size={18} />
+                      
+                        <span className="absolute -top-1 -right-1 bg-[#FF9B51] text-white text-[8px] px-1.5 rounded-full">
+                          1
+                        </span>
+                    
+                    </Link>
+                    <div className="relative">
+                      <button 
+                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                        className="w-10 h-10 bg-white/10 rounded-full hover:bg-white/20 transition flex items-center justify-center"
+                      >
+                        <User size={18} />
+                      </button>
+                      {isProfileOpen && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white text-[#25343F] rounded-lg shadow-lg border border-[#BFC9D1] z-50">
+                          <div className="p-3 border-b border-[#EAEFEF]">
+                            <p className="text-xs opacity-60 mb-1">Signed in as</p>
+                            <p className="text-sm font-bold text-[#FF9B51]">
+                              {session?.user?.name || 'Guest'} {session?.user?.role && `(${session.user.role})`}
+                            </p>
+                          </div>
+                          <Link href="/cart" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
+                            <ShoppingCart size={16} /> My Cart
+                          </Link>
+                          <a href="/user/order" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
+                            <Package size={16} /> My Orders
+                          </a>
+        
+                          {/* Dashboard links for Admin/Vendor */}
+                          {session?.user?.role === 'ADMIN' && (
+                            <Link href="/admin" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
+                              <LayoutDashboard size={16} /> Admin Dashboard
+                            </Link>
+                          )}
+                          {session?.user?.role === 'VENDOR' && (
+                            <Link href="/vendor" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
+                              <LayoutDashboard size={16} /> Vendor Dashboard
+                            </Link>
+                          )}
+        
+                          <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
+                            <Settings size={16} /> Settings
+                          </a>
+                          {session ? (
+                            <button 
+                              onClick={() => signOut({ callbackUrl: '/' })}
+                              className="w-full text-left block px-4 py-2 text-sm hover:bg-red-50 text-red-500 flex items-center gap-2 border-t border-[#EAEFEF]"
+                            >
+                              <LogOut size={16} /> Logout
+                            </button>
+                          ) : (
+                            <Link href="/login" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF] border-t border-[#EAEFEF]">
+                              <User size={16} /> Login
+                            </Link>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+              </nav>
 
-      <main className="max-w-7xl mx-auto px-15 grid lg:grid-cols-12 gap-12">
+      <main className="max-w-7xl mx-auto mt-16  px-15 grid lg:grid-cols-12 gap-12">
         
         {/* 2. LEFT COLUMN: IMAGE GALLERY */}
         <div className="lg:col-span-7 space-y-6">

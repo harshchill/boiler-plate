@@ -98,9 +98,7 @@ export default function RentalHackathonPortal() {
             <h1 className="font-black tracking-tighter text-xl italic">PRO<span className="text-[#FF9B51]">RENT</span></h1>
           </div>
           <div className="flex items-center gap-4">
-            <button className="text-white hover:text-[#FF9B51] transition text-sm font-medium">
-              <FileText size={18} className="inline mr-1" /> Terms & Conditions
-            </button>
+            
             <button className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition">
               <Heart size={18} />
             </button>
