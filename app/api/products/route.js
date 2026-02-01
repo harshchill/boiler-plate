@@ -10,6 +10,7 @@ export async function GET(request) {
     // Build where clause
     const where = {
       isRentable: true,
+      adminApproved: true,
     }
 
     if (category && category !== 'All') {

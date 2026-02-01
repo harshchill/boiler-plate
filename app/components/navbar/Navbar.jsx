@@ -61,8 +61,7 @@ const Navbar = () => {
                   <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">
                     Logged in as
                   </p>
-                  <p className="font-bold text-sm">Vendor / Admin</p> [cite: 21,
-                  125]
+                  <p className="font-bold text-sm">Vendor / Admin</p> 
                 </div>
 
                 <div className="p-2">
@@ -85,7 +84,7 @@ const Navbar = () => {
                     href="#"
                     className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase text-red-500 hover:bg-red-50 rounded-xl transition"
                   >
-                    <LogOut size={16} /> Logout [cite: 26]
+                    <LogOut size={16} /> Logout
                   </a>
                 </div>
               </div>

@@ -1,8 +1,11 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from 'react'
+import { useSession, signOut } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import {
+  Activity,
   LayoutGrid,
   List,
   Calendar,
@@ -12,292 +15,283 @@ import {
   AlertCircle,
   IndianRupee,
   Search,
-  UserCircle,
-} from "lucide-react";
+  User as UserIcon,
+  Settings,
+  LogOut,
+  Heart,
+  ShoppingCart,
+  FileText,
+  Plus,
+  Minus,
+  Package
+} from 'lucide-react'
+import { toast } from '../../lib/toast'
 
-import VendorNavbar from "../components/navbar/Vendornavbar";
+const VendorDashboard = () => {
+  const router = useRouter()
+  const { data: session, status } = useSession()
+  const [viewMode, setViewMode] = useState('kanban')
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [customers, setCustomers] = useState([])
+  const [loading, setLoading] = useState(true)
 
-const InteractiveVendorDashboard = () => {
-  const [viewMode, setViewMode] = useState("kanban");
+  // Check auth and fetch vendor customers
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login')
+      return
+    }
 
-  // Data mapping based on your requirements
-  const [orders] = useState([
-    {
-      id: "S00001",
-      customer: "Smith",
-      product: "TV",
-      status: "Sale Order",
-      start: "Jan 22",
-      end: "Jan 26",
-      price: 1450,
-      color: "bg-[#FF9B51] text-[#25343F]",
-    },
-    {
-      id: "S00006",
-      customer: "John",
-      product: "Projector",
-      status: "",
-      start: "Jan 22",
-      end: "Jan 24",
-      price: 14.5,
-      color: "",
-    },
-    {
-      id: "S00010",
-      customer: "Mark wood",
-      product: "Printer",
-      status: "Confirmed",
-      start: "Jan 22",
-      end: "Jan 23",
-      price: 50,
-      color: "bg-emerald-500 text-white",
-    },
-    {
-      id: "S00008",
-      customer: "Alex",
-      product: "Car",
-      status: "Invoiced",
-      start: "Jan 22",
-      end: "Feb 01",
-      price: 775,
-      color: "bg-blue-500 text-white",
-    },
-    {
-      id: "S00011",
-      customer: "Mark wood",
-      product: "Printer",
-      status: "Sale Order",
-      start: "Jan 22",
-      end: "Jan 25",
-      price: 150,
-      color: "bg-[#FF9B51] text-[#25343F]",
-    },
-  ]);
+    if (status === 'authenticated' && session?.user?.role !== 'VENDOR') {
+      router.push('/')
+      return
+    }
 
-  const columns = ["Confirmed", "Picked Up", "Late"];
-  // 1. Search state define karein (agar pehle se nahi hai)
-  const [searchQuery, setSearchQuery] = useState("");
+    if (status === 'authenticated') {
+      fetchCustomers()
+    }
+  }, [status, session, router])
 
-  // 2. Orders ko filter karne ki logic
-  const filteredOrders = orders.filter((order) => {
-    const query = searchQuery.toLowerCase();
+  const fetchCustomers = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/vendor/customers')
+      if (!response.ok) throw new Error('Failed to fetch customers')
+      const data = await response.json()
+      setCustomers(data.customers || [])
+    } catch (error) {
+      console.error('Error fetching customers:', error)
+      toast.error('Failed to load customers')
+      setCustomers([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (status === 'loading' || loading) {
     return (
-      order.id.toLowerCase().includes(query) ||
-      order.customer.toLowerCase().includes(query) ||
-      order.product.toLowerCase().includes(query)
-    );
-  });
+      <div className="min-h-screen bg-[#EAEFEF] flex items-center justify-center">
+        <div className="text-center">
+          <Package size={48} className="mx-auto mb-4 opacity-30 animate-pulse" />
+          <p className="text-sm font-bold opacity-50">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const filteredCustomers = customers.filter((customer) => {
+    const query = searchQuery.toLowerCase()
+    return (
+      customer.name?.toLowerCase().includes(query) ||
+      customer.email?.toLowerCase().includes(query) ||
+      customer.companyName?.toLowerCase().includes(query)
+    )
+  })
 
   return (
     <div className="min-h-screen bg-[#EAEFEF] font-sans text-[#25343F]">
-      <VendorNavbar viewMode={viewMode} setViewMode={setViewMode} />
+      {/* Navbar */}
+      <nav className="p-6 sticky top-0 z-50 bg-white border-b border-[#BFC9D1] shadow-sm">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="text-2xl font-black uppercase tracking-tighter flex items-center gap-2">
+              <Activity size={28} style={{ color: '#FF9B51' }} /> PRO<span className="opacity-60">RENT</span>
+            </Link>
+            <div className="hidden lg:flex space-x-6 text-[10px] font-black uppercase tracking-widest opacity-70">
+              <button onClick={() => setViewMode('kanban')} className="hover:text-[#FF9B51] flex items-center gap-1">
+                <LayoutGrid size={14} /> Orders
+              </button>
+              <button onClick={() => setViewMode('list')} className="hover:text-[#FF9B51] transition">
+                <List size={14} /> Customers
+              </button>
+              <Link href="/vendor/products" className="hover:text-[#FF9B51] flex items-center gap-1">
+                <Package size={14} /> Products
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 border-r border-[#BFC9D1] pr-6">
+              <button className="relative hover:text-[#FF9B51] transition">
+                <Heart size={20} />
+                <span className="absolute -top-2 -right-2 bg-[#FF9B51] text-white text-[8px] px-1.5 rounded-full">0</span>
+              </button>
+              <Link href="/cart" className="relative hover:text-[#FF9B51] transition">
+                <ShoppingCart size={20} />
+                <span className="absolute -top-2 -right-2 bg-[#25343F] text-white text-[8px] px-1.5 rounded-full">0</span>
+              </Link>
+            </div>
+
+            {/* Account Profile */}
+            <div className="relative">
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center gap-3 px-4 py-2 rounded-full border-2 border-[#25343F] hover:bg-[#25343F] hover:text-white transition-all group"
+              >
+                <UserIcon size={18} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Account</span>
+              </button>
+
+              {isProfileOpen && (
+                <div className="absolute right-0 mt-3 w-48 bg-white border border-[#BFC9D1] rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                  <div className="p-4 border-b border-[#EAEFEF] bg-[#EAEFEF]/50">
+                    <p className="text-[10px] font-black opacity-40 uppercase">Signed in as</p>
+                    <p className="text-xs font-bold truncate text-[#FF9B51]">
+                      {session?.user?.name || 'Vendor'} (VENDOR)
+                    </p>
+                  </div>
+                  <Link href="/vendor/products" className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors">
+                    <Package size={14} /> My Products
+                  </Link>
+                  <Link href="/vendor/orders" className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors">
+                    <FileText size={14} /> My Orders
+                  </Link>
+                  <button className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-[#EAEFEF] transition-colors">
+                    <Settings size={14} /> Settings
+                  </button>
+                  <button
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold hover:bg-red-50 text-red-500 transition-colors border-t border-[#EAEFEF]"
+                  >
+                    <LogOut size={14} /> Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
 
       <main className="max-w-7xl mx-auto p-6 lg:p-10">
-        <AnimatePresence mode="wait">
-          {viewMode === "kanban" ? (
-            <motion.div
-              key="kanban"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+        {/* Header */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+          <div>
+            <h1 className="text-4xl font-black tracking-tighter uppercase">
+              Vendor <span className="text-[#FF9B51]">Dashboard</span>
+            </h1>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 flex items-center gap-2 mt-2">
+              <Clock size={12} /> Manage your rentals & customers
+            </p>
+          </div>
+          <div className="flex gap-4 items-center">
+            <div className="flex bg-white p-2 rounded-3xl shadow-xl border border-[#BFC9D1]">
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`p-2 rounded-xl transition-all ${viewMode === 'kanban' ? 'bg-[#25343F] text-white' : 'text-[#25343F]'}`}
+              >
+                <LayoutGrid size={20} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-[#25343F] text-white' : 'text-[#25343F] opacity-40'}`}
+              >
+                <List size={20} />
+              </button>
+            </div>
+            <Link
+              href="/vendor/publish-product"
+              className="bg-[#FF9B51] text-white px-6 py-2 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:brightness-110 transition"
             >
-              {/* Kanban Header */}
-              <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                <div>
-                  <h1 className="text-4xl font-black tracking-tighter uppercase italic">
-                    Vendor <span className="text-[#FF9B51]">Control</span>
-                  </h1>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 flex items-center gap-2 mt-2">
-                    <Clock size={12} /> Live Inventory & Rental Tracking
-                  </p>
-                </div>
-                <div className="flex bg-white p-2 rounded-3xl shadow-xl border border-[#BFC9D1]">
-                  <button
-                    onClick={() => setViewMode("kanban")}
-                    className="p-2 bg-[#25343F] text-white rounded-xl transition-all"
-                  >
-                    <LayoutGrid size={20} />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className="p-2 text-[#25343F] opacity-40 hover:opacity-100"
-                  >
-                    <List size={20} />
-                  </button>
-                </div>
-              </header>
+              + Publish Product
+            </Link>
+          </div>
+        </header>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {columns.map((col) => (
-                  <div key={col} className="flex flex-col gap-6">
-                    <h3 className="font-black uppercase text-xs tracking-widest opacity-60 flex items-center gap-2 px-4">
-                      {col === "Late" && (
-                        <AlertCircle size={14} className="text-red-500" />
+        {/* Search */}
+        <div className="mb-8 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search customers by name, email, or company..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF9B51] focus:border-[#FF9B51]"
+          />
+        </div>
+
+        {/* Content */}
+        {viewMode === 'kanban' ? (
+          <div className="text-center py-12">
+            <p className="text-lg opacity-60">Kanban view coming soon</p>
+          </div>
+        ) : (
+          // Customers List View
+          <div className="space-y-6">
+            {filteredCustomers.length === 0 ? (
+              <div className="bg-white rounded-2xl p-12 border-2 border-[#BFC9D1] text-center">
+                <UserIcon size={64} className="mx-auto mb-4 opacity-20" />
+                <p className="text-lg font-bold">No customers yet</p>
+                <p className="text-sm opacity-60 mt-2">Your customers will appear here once they place orders.</p>
+              </div>
+            ) : (
+              filteredCustomers.map((customer) => (
+                <div key={customer.id} className="bg-white rounded-2xl p-6 border-2 border-[#BFC9D1] hover:border-[#FF9B51] transition">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-black uppercase">{customer.name}</h3>
+                      <p className="text-sm opacity-60">{customer.email}</p>
+                      {customer.companyName && (
+                        <p className="text-xs opacity-50 mt-1">Company: {customer.companyName}</p>
                       )}
-                      {col}
-                    </h3>
-                    <div className="bg-white/40 border-2 border-dashed border-[#BFC9D1] rounded-[2.5rem] p-4 min-h-[500px] flex flex-col gap-4">
-                      {orders
-                        .filter(
-                          (o) =>
-                            (col === "Confirmed" &&
-                              (o.status === "Confirmed" ||
-                                o.status === "Sale Order")) ||
-                            (col === "Late" && o.status === "Invoiced"),
-                        )
-                        .map((order) => (
-                          <motion.div
-                            key={order.id}
-                            whileHover={{ y: -5 }}
-                            className="bg-white p-6 rounded-[2rem] shadow-sm border border-[#BFC9D1] hover:border-[#FF9B51] transition-all"
-                          >
-                            <div className="flex justify-between items-start mb-4">
-                              <span className="bg-[#EAEFEF] px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                                {order.id}
-                              </span>
-                              <span
-                                className={`h-2.5 w-2.5 rounded-full ${order.status === "Invoiced" ? "bg-blue-500" : "bg-green-500"}`}
-                              />
-                            </div>
-                            <h4 className="text-lg font-black uppercase mb-1 tracking-tight">
-                              {order.product}
-                            </h4>
-                            <div className="flex justify-between items-center mb-4">
-                              <p className="text-[10px] font-bold opacity-40 uppercase italic">
-                                {order.customer}
-                              </p>
-                              <div className="flex items-center text-[#25343F] font-black">
-                                <IndianRupee
-                                  size={12}
-                                  className="text-[#FF9B51]"
-                                />
-                                <span>
-                                  {order.price.toLocaleString("en-IN")}
+                    </div>
+                    <div className="text-right">
+                      {customer.role && (
+                        <span className="inline-block px-3 py-1 bg-[#EAEFEF] rounded-full text-[10px] font-black uppercase">
+                          {customer.role}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Orders Section */}
+                  {customer.orders && customer.orders.length > 0 ? (
+                    <div className="space-y-3">
+                      <p className="text-xs font-bold uppercase opacity-60 mb-3">Orders from this customer:</p>
+                      <div className="max-h-64 overflow-y-auto space-y-2">
+                        {customer.orders.map((order, idx) => (
+                          <div key={idx} className="bg-[#EAEFEF] rounded-lg p-3 flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <Hash size={14} className="opacity-60 flex-shrink-0" />
+                                <p className="text-xs font-black uppercase text-[#FF9B51] truncate">Order #{order.orderId}</p>
+                              </div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <IndianRupee size={14} className="opacity-60 flex-shrink-0" />
+                                <p className="text-sm font-bold">₹{parseFloat(order.amountTotal).toFixed(2)}</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black uppercase bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                                  {order.status}
+                                </span>
+                                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${
+                                  order.paymentStatus === 'PAID'
+                                    ? 'bg-green-100 text-green-700'
+                                    : order.paymentStatus === 'PARTIAL'
+                                    ? 'bg-yellow-100 text-yellow-700'
+                                    : 'bg-red-100 text-red-700'
+                                }`}>
+                                  {order.paymentStatus}
                                 </span>
                               </div>
                             </div>
-                            <div className="bg-[#25343F] text-white p-4 rounded-2xl flex justify-between items-center font-bold text-[11px]">
-                              <span>{order.start}</span>
-                              <ArrowRight
-                                size={12}
-                                className="text-[#FF9B51]"
-                              />{" "}
-                              <span>{order.end}</span>
-                            </div>
-                          </motion.div>
+                          </div>
                         ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ) : (
-            /* LIST VIEW WITH PREVIOUS THEME & SCREENSHOT DESIGN */
-            <motion.div
-              key="list"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="flex flex-col gap-6 mb-8">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-6"></div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex bg-white rounded-xl border border-[#BFC9D1] overflow-hidden shadow-sm">
-                      <button
-                        onClick={() => setViewMode("kanban")}
-                        className="p-2.5 text-[#25343F] opacity-40 hover:opacity-100 transition-all"
-                      >
-                        <LayoutGrid size={20} />
-                      </button>
-                      <button className="p-2.5 bg-[#25343F] text-[#FF9B51]">
-                        <List size={20} />
-                      </button>
+                  ) : (
+                    <div className="text-sm opacity-60">
+                      No orders found
                     </div>
-                  </div>
+                  )}
                 </div>
-              </div>
-
-              {/* DESIGN FROM SCREENSHOT 4 */}
-              <div className="flex border-2 border-[#BFC9D1] rounded-[2.5rem] overflow-hidden bg-white shadow-2xl">
-                {/* Vertical Side Label */}
-                <div className="bg-[#25343F] border-r border-[#BFC9D1] w-14 flex items-center justify-center">
-                  <span className="rotate-[-90deg] whitespace-nowrap text-[10px] font-black tracking-[0.4em] text-white/40 uppercase">
-                    Rental Status
-                  </span>
-                </div>
-
-                <div className="flex-1 overflow-x-auto">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="text-[#25343F] text-[10px] font-black uppercase tracking-widest border-b border-[#EAEFEF] bg-[#EAEFEF]/50">
-                        <th className="p-5 w-12">
-                          <input type="checkbox" className="accent-[#25343F]" />
-                        </th>
-                        <th className="p-5">Order Reference</th>
-                        <th className="p-5">Order Date</th>
-                        <th className="p-5">Customer Name</th>
-                        <th className="p-5">Product</th>
-                        <th className="p-5">Total</th>
-                        <th className="p-5">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#EAEFEF]">
-                      {orders.map((order) => (
-                        <tr
-                          key={order.id}
-                          className="hover:bg-[#EAEFEF]/30 transition-colors group"
-                        >
-                          <td className="p-5">
-                            <input
-                              type="checkbox"
-                              className="accent-[#25343F]"
-                            />
-                          </td>
-                          <td className="p-5 font-black text-xl tracking-tighter text-[#25343F]">
-                            {order.id}
-                          </td>
-                          <td className="p-5 text-slate-400 font-bold uppercase text-[10px] italic">
-                            {order.start}
-                          </td>
-                          <td className="p-5 text-xl font-black tracking-tight uppercase">
-                            {order.customer}
-                          </td>
-                          <td className="p-5 font-bold text-slate-500 uppercase text-xs">
-                            {order.product}
-                          </td>
-                          <td className="p-5">
-                            <div className="flex items-center text-4xl font-black italic tracking-tighter group-hover:text-[#FF9B51] transition-colors">
-                              <span className="text-sm mr-1 opacity-30 italic">
-                                <IndianRupee
-                                  size={24}
-                                  className="text-[#f38836]"
-                                />
-                              </span>
-                              {order.price.toLocaleString("en-IN")}
-                            </div>
-                          </td>
-                          <td className="p-5">
-                            {order.status && (
-                              <span
-                                className={`${order.color} text-[9px] font-black uppercase px-4 py-1.5 rounded-lg shadow-md tracking-widest inline-block`}
-                              >
-                                {order.status}
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              ))
+            )}
+          </div>
+        )}
       </main>
     </div>
-  );
-};
+  )
+}
 
-export default InteractiveVendorDashboard;
+export default VendorDashboard

@@ -50,6 +50,7 @@ export type ProductMinAggregateOutputType = {
   image: string | null
   priceHourly: runtime.Decimal | null
   totalStock: number | null
+  adminApproved: boolean | null
   categoryId: number | null
   vendorId: number | null
 }
@@ -62,6 +63,7 @@ export type ProductMaxAggregateOutputType = {
   image: string | null
   priceHourly: runtime.Decimal | null
   totalStock: number | null
+  adminApproved: boolean | null
   categoryId: number | null
   vendorId: number | null
 }
@@ -74,6 +76,7 @@ export type ProductCountAggregateOutputType = {
   image: number
   priceHourly: number
   totalStock: number
+  adminApproved: number
   categoryId: number
   vendorId: number
   _all: number
@@ -104,6 +107,7 @@ export type ProductMinAggregateInputType = {
   image?: true
   priceHourly?: true
   totalStock?: true
+  adminApproved?: true
   categoryId?: true
   vendorId?: true
 }
@@ -116,6 +120,7 @@ export type ProductMaxAggregateInputType = {
   image?: true
   priceHourly?: true
   totalStock?: true
+  adminApproved?: true
   categoryId?: true
   vendorId?: true
 }
@@ -128,6 +133,7 @@ export type ProductCountAggregateInputType = {
   image?: true
   priceHourly?: true
   totalStock?: true
+  adminApproved?: true
   categoryId?: true
   vendorId?: true
   _all?: true
@@ -227,6 +233,7 @@ export type ProductGroupByOutputType = {
   image: string | null
   priceHourly: runtime.Decimal | null
   totalStock: number
+  adminApproved: boolean
   categoryId: number | null
   vendorId: number
   _count: ProductCountAggregateOutputType | null
@@ -262,6 +269,7 @@ export type ProductWhereInput = {
   image?: Prisma.StringNullableFilter<"Product"> | string | null
   priceHourly?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFilter<"Product"> | number
+  adminApproved?: Prisma.BoolFilter<"Product"> | boolean
   categoryId?: Prisma.IntNullableFilter<"Product"> | number | null
   vendorId?: Prisma.IntFilter<"Product"> | number
   category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
@@ -277,6 +285,7 @@ export type ProductOrderByWithRelationInput = {
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   priceHourly?: Prisma.SortOrderInput | Prisma.SortOrder
   totalStock?: Prisma.SortOrder
+  adminApproved?: Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   vendorId?: Prisma.SortOrder
   category?: Prisma.CategoryOrderByWithRelationInput
@@ -295,6 +304,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   image?: Prisma.StringNullableFilter<"Product"> | string | null
   priceHourly?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFilter<"Product"> | number
+  adminApproved?: Prisma.BoolFilter<"Product"> | boolean
   categoryId?: Prisma.IntNullableFilter<"Product"> | number | null
   vendorId?: Prisma.IntFilter<"Product"> | number
   category?: Prisma.XOR<Prisma.CategoryNullableScalarRelationFilter, Prisma.CategoryWhereInput> | null
@@ -310,6 +320,7 @@ export type ProductOrderByWithAggregationInput = {
   image?: Prisma.SortOrderInput | Prisma.SortOrder
   priceHourly?: Prisma.SortOrderInput | Prisma.SortOrder
   totalStock?: Prisma.SortOrder
+  adminApproved?: Prisma.SortOrder
   categoryId?: Prisma.SortOrderInput | Prisma.SortOrder
   vendorId?: Prisma.SortOrder
   _count?: Prisma.ProductCountOrderByAggregateInput
@@ -330,6 +341,7 @@ export type ProductScalarWhereWithAggregatesInput = {
   image?: Prisma.StringNullableWithAggregatesFilter<"Product"> | string | null
   priceHourly?: Prisma.DecimalNullableWithAggregatesFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntWithAggregatesFilter<"Product"> | number
+  adminApproved?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
   categoryId?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
   vendorId?: Prisma.IntWithAggregatesFilter<"Product"> | number
 }
@@ -341,6 +353,7 @@ export type ProductCreateInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
   vendor: Prisma.UserCreateNestedOneWithoutProductsInput
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
@@ -354,6 +367,7 @@ export type ProductUncheckedCreateInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   categoryId?: number | null
   vendorId: number
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
@@ -366,6 +380,7 @@ export type ProductUpdateInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
   vendor?: Prisma.UserUpdateOneRequiredWithoutProductsNestedInput
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
@@ -379,6 +394,7 @@ export type ProductUncheckedUpdateInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vendorId?: Prisma.IntFieldUpdateOperationsInput | number
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
@@ -392,6 +408,7 @@ export type ProductCreateManyInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   categoryId?: number | null
   vendorId: number
 }
@@ -403,6 +420,7 @@ export type ProductUpdateManyMutationInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ProductUncheckedUpdateManyInput = {
@@ -413,6 +431,7 @@ export type ProductUncheckedUpdateManyInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vendorId?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -435,6 +454,7 @@ export type ProductCountOrderByAggregateInput = {
   image?: Prisma.SortOrder
   priceHourly?: Prisma.SortOrder
   totalStock?: Prisma.SortOrder
+  adminApproved?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   vendorId?: Prisma.SortOrder
 }
@@ -455,6 +475,7 @@ export type ProductMaxOrderByAggregateInput = {
   image?: Prisma.SortOrder
   priceHourly?: Prisma.SortOrder
   totalStock?: Prisma.SortOrder
+  adminApproved?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   vendorId?: Prisma.SortOrder
 }
@@ -467,6 +488,7 @@ export type ProductMinOrderByAggregateInput = {
   image?: Prisma.SortOrder
   priceHourly?: Prisma.SortOrder
   totalStock?: Prisma.SortOrder
+  adminApproved?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   vendorId?: Prisma.SortOrder
 }
@@ -609,6 +631,7 @@ export type ProductCreateWithoutCategoryInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   vendor: Prisma.UserCreateNestedOneWithoutProductsInput
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
 }
@@ -621,6 +644,7 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   vendorId: number
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
 }
@@ -662,6 +686,7 @@ export type ProductScalarWhereInput = {
   image?: Prisma.StringNullableFilter<"Product"> | string | null
   priceHourly?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFilter<"Product"> | number
+  adminApproved?: Prisma.BoolFilter<"Product"> | boolean
   categoryId?: Prisma.IntNullableFilter<"Product"> | number | null
   vendorId?: Prisma.IntFilter<"Product"> | number
 }
@@ -673,6 +698,7 @@ export type ProductCreateWithoutVendorInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
   orderItems?: Prisma.OrderItemCreateNestedManyWithoutProductInput
 }
@@ -685,6 +711,7 @@ export type ProductUncheckedCreateWithoutVendorInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   categoryId?: number | null
   orderItems?: Prisma.OrderItemUncheckedCreateNestedManyWithoutProductInput
 }
@@ -722,6 +749,7 @@ export type ProductCreateWithoutOrderItemsInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   category?: Prisma.CategoryCreateNestedOneWithoutProductsInput
   vendor: Prisma.UserCreateNestedOneWithoutProductsInput
 }
@@ -734,6 +762,7 @@ export type ProductUncheckedCreateWithoutOrderItemsInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   categoryId?: number | null
   vendorId: number
 }
@@ -761,6 +790,7 @@ export type ProductUpdateWithoutOrderItemsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
   vendor?: Prisma.UserUpdateOneRequiredWithoutProductsNestedInput
 }
@@ -773,6 +803,7 @@ export type ProductUncheckedUpdateWithoutOrderItemsInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   vendorId?: Prisma.IntFieldUpdateOperationsInput | number
 }
@@ -785,6 +816,7 @@ export type ProductCreateManyCategoryInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   vendorId: number
 }
 
@@ -795,6 +827,7 @@ export type ProductUpdateWithoutCategoryInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vendor?: Prisma.UserUpdateOneRequiredWithoutProductsNestedInput
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
 }
@@ -807,6 +840,7 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vendorId?: Prisma.IntFieldUpdateOperationsInput | number
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
 }
@@ -819,6 +853,7 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   vendorId?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -830,6 +865,7 @@ export type ProductCreateManyVendorInput = {
   image?: string | null
   priceHourly?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: number
+  adminApproved?: boolean
   categoryId?: number | null
 }
 
@@ -840,6 +876,7 @@ export type ProductUpdateWithoutVendorInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   category?: Prisma.CategoryUpdateOneWithoutProductsNestedInput
   orderItems?: Prisma.OrderItemUpdateManyWithoutProductNestedInput
 }
@@ -852,6 +889,7 @@ export type ProductUncheckedUpdateWithoutVendorInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   orderItems?: Prisma.OrderItemUncheckedUpdateManyWithoutProductNestedInput
 }
@@ -864,6 +902,7 @@ export type ProductUncheckedUpdateManyWithoutVendorInput = {
   image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   priceHourly?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   totalStock?: Prisma.IntFieldUpdateOperationsInput | number
+  adminApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   categoryId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
@@ -906,6 +945,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   image?: boolean
   priceHourly?: boolean
   totalStock?: boolean
+  adminApproved?: boolean
   categoryId?: boolean
   vendorId?: boolean
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
@@ -922,6 +962,7 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   image?: boolean
   priceHourly?: boolean
   totalStock?: boolean
+  adminApproved?: boolean
   categoryId?: boolean
   vendorId?: boolean
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
@@ -936,6 +977,7 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   image?: boolean
   priceHourly?: boolean
   totalStock?: boolean
+  adminApproved?: boolean
   categoryId?: boolean
   vendorId?: boolean
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
@@ -950,11 +992,12 @@ export type ProductSelectScalar = {
   image?: boolean
   priceHourly?: boolean
   totalStock?: boolean
+  adminApproved?: boolean
   categoryId?: boolean
   vendorId?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "isRentable" | "image" | "priceHourly" | "totalStock" | "categoryId" | "vendorId", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "isRentable" | "image" | "priceHourly" | "totalStock" | "adminApproved" | "categoryId" | "vendorId", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
   vendor?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -985,6 +1028,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     image: string | null
     priceHourly: runtime.Decimal | null
     totalStock: number
+    adminApproved: boolean
     categoryId: number | null
     vendorId: number
   }, ExtArgs["result"]["product"]>
@@ -1420,6 +1464,7 @@ export interface ProductFieldRefs {
   readonly image: Prisma.FieldRef<"Product", 'String'>
   readonly priceHourly: Prisma.FieldRef<"Product", 'Decimal'>
   readonly totalStock: Prisma.FieldRef<"Product", 'Int'>
+  readonly adminApproved: Prisma.FieldRef<"Product", 'Boolean'>
   readonly categoryId: Prisma.FieldRef<"Product", 'Int'>
   readonly vendorId: Prisma.FieldRef<"Product", 'Int'>
 }
