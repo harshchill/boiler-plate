@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { 
   Search, Calendar, CheckCircle, ArrowRight, Download, 
   Activity, ShieldCheck, User, Filter, LayoutDashboard, 
@@ -10,7 +11,8 @@ import {
 } from 'lucide-react';
 
 export default function RentalHackathonPortal() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   // Removed view state and role switcher logic
   const [dates, setDates] = useState({ start: '', end: '' });
   const [activeCategory, setActiveCategory] = useState('All');
@@ -67,6 +69,18 @@ export default function RentalHackathonPortal() {
     fetchCartCount();
   }, [session]);
 
+  // Redirect vendors/admins away from public landing after login
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const role = session?.user?.role
+      if (role === 'VENDOR') {
+        router.replace('/vendor')
+      } else if (role === 'ADMIN') {
+        router.replace('/admin')
+      }
+    }
+  }, [status, session, router])
+
   // Helper function to format category name
   const formatCategory = (category) => {
     if (!category) return '';
@@ -119,6 +133,19 @@ export default function RentalHackathonPortal() {
                   <a href="/user/order" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
                     <Package size={16} /> My Orders
                   </a>
+
+                  {/* Dashboard links for Admin/Vendor */}
+                  {session?.user?.role === 'ADMIN' && (
+                    <Link href="/admin" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
+                      <LayoutDashboard size={16} /> Admin Dashboard
+                    </Link>
+                  )}
+                  {session?.user?.role === 'VENDOR' && (
+                    <Link href="/vendor" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
+                      <LayoutDashboard size={16} /> Vendor Dashboard
+                    </Link>
+                  )}
+
                   <a href="#" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-[#EAEFEF]">
                     <Settings size={16} /> Settings
                   </a>
